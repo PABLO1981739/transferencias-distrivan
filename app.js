@@ -36,4 +36,19 @@ comprobanteInput.addEventListener('change',async()=>{
   }catch(err){setOcrStatus('No se pudo leer la imagen. Podés escribir el número manualmente.','warning');}
   finally{if(worker)await worker.terminate().catch(()=>{});}
 });
+
+const downloadTodayButton=document.querySelector('#downloadToday'),downloadStatus=document.querySelector('#downloadStatus');
+const csvCell=value=>'"'+String(value??'').replace(/"/g,'""')+'"';
+downloadTodayButton.addEventListener('click',()=>{
+  const today=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+  const saved=JSON.parse(localStorage.getItem('distrivan-transferencias')||'[]');
+  const rows=saved.filter(record=>record.fecha===today);
+  if(!rows.length){downloadStatus.textContent='Todavía no hay movimientos guardados hoy en este celular.';downloadStatus.className='download-status warning';downloadStatus.hidden=false;return;}
+  const header=['Fecha','Número de cliente','Cliente','Importe','Cobrador','Vendedor de la zona','Número de operación','Observaciones'];
+  const data=rows.map(record=>[record.fecha,record.clienteNumero,record.clienteNombre,record.importe,record.repartidor,record.vendedorZona,record.operacion,record.observaciones]);
+  const csv='\uFEFF'+[header,...data].map(row=>row.map(csvCell).join(';')).join('\r\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const link=document.createElement('a');link.href=url;link.download='transferencias-distrivan-'+today+'.csv';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  downloadStatus.textContent='Archivo descargado: '+rows.length+' movimiento'+(rows.length===1?'':'s')+' de hoy.';downloadStatus.className='download-status success';downloadStatus.hidden=false;
+});
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js'));

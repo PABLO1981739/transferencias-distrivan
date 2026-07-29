@@ -214,3 +214,5 @@ button:disabled { opacity: .65; cursor: wait; }
 }
 
 .ocr-status{display:block;margin-top:6px;font-size:13px;font-weight:700;line-height:1.35}.ocr-status.reading{color:#35546a}.ocr-status.success{color:#0b6b52;background:transparent;padding:0}.ocr-status.warning{color:#9a5b00}
+
+.secondary-button{margin-top:10px;background:#fff;color:#0b6b52;border:2px solid #0b6b52}.secondary-button:hover{background:#eaf7f2}.download-status{margin:10px 0 0;font-size:14px;font-weight:700;text-align:center}.download-status.success{color:#0b6b52}.download-status.warning{color:#9a5b00}
