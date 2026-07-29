@@ -212,3 +212,5 @@ button:disabled { opacity: .65; cursor: wait; }
   .card { padding: 20px 16px; border-radius: 20px; }
   .grid { grid-template-columns: 1fr; }
 }
+
+.ocr-status{display:block;margin-top:6px;font-size:13px;font-weight:700;line-height:1.35}.ocr-status.reading{color:#35546a}.ocr-status.success{color:#0b6b52;background:transparent;padding:0}.ocr-status.warning{color:#9a5b00}
