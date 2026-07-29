@@ -5,12 +5,17 @@ function extractOperationNumber(text){
   const clean=String(text||'').replace(/\r/g,'');
   const lines=clean.split('\n').map(line=>line.trim()).filter(Boolean);
   const labels=/(?:n[°ºo.]?\s*(?:de\s*)?(?:operaci[oó]n|comprobante)|nro\.?\s*(?:de\s*)?(?:operaci[oó]n|comprobante)|operaci[oó]n|referencia|id\s*(?:de\s*)?(?:operaci[oó]n|transacci[oó]n))/i;
+  const numericCandidates=value=>{
+    const normalized=String(value||'').replace(/[Oo]/g,'0').replace(/[Il|]/g,'1');
+    return (normalized.match(/\d[\d .-]{3,28}\d/g)||[])
+      .map(item=>item.replace(/\D/g,''))
+      .filter(item=>item.length>=5&&item.length<=24);
+  };
   for(let i=0;i<lines.length;i++){
     if(!labels.test(lines[i]))continue;
-    const same=lines[i].replace(labels,' ').match(/[A-Z0-9][A-Z0-9.-]{4,29}/i);
-    if(same){const value=same[0].replace(/[^A-Z0-9]/gi,'');if(value.length>=5)return value;}
-    const next=(lines[i+1]||'').match(/[A-Z0-9][A-Z0-9.-]{4,29}/i);
-    if(next){const value=next[0].replace(/[^A-Z0-9]/gi,'');if(value.length>=5)return value;}
+    const nearby=[lines[i].replace(labels,' '),lines[i+1]||'',lines[i+2]||''];
+    const candidates=nearby.flatMap(numericCandidates);
+    if(candidates.length)return candidates.sort((a,b)=>b.length-a.length)[0];
   }
   return '';
 }
